@@ -22,17 +22,19 @@ const getBody = (req, callback) => {
 
 // here, you could declare one or more variables to store what comes back from the form.
 let item = "Enter something below.";
-
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let message = "Guess a number between 1 and 100.";
 // here, you can change the form below to modify the input fields and what is displayed.
 // This is just ordinary html with string interpolation.
 const form = () => {
   return `
   <body>
-  <p>${item}</p>
-  <form method="POST">
-  <input name="item"></input>
-  <button type="submit">Submit</button>
-  </form>
+    <p>${message}</p>
+    <form method="POST">
+      <label for="guess">Enter your guess:</label>
+      <input type="number" name="guess" min="1" max="100" required></input>
+      <button type="submit">Submit</button>
+    </form>
   </body>
   `;
 };
@@ -44,10 +46,18 @@ const server = http.createServer((req, res) => {
     getBody(req, (body) => {
       console.log("The body of the post is ", body);
       // here, you can add your own logic
-      if (body["item"]) {
-        item = body["item"];
+      if (body["guess"]) {
+        const guess = parseInt(body["guess"], 10);
+        if (guess === secretNumber) {
+          message = "Congratulations! You guessed the correct number.";
+          secretNumber = Math.floor(Math.random() * 100) + 1;
+        } else if (guess < secretNumber) {
+          message = "Too low! Try a higher number.";
+        } else {
+          message = "Too high! Try a lower number.";
+        }
       } else {
-        item = "Nothing was entered.";
+        message = "Please enter a valid guess.";
       }
       // Your code changes would end here
       res.writeHead(303, {
@@ -59,6 +69,9 @@ const server = http.createServer((req, res) => {
     res.end(form());
   }
 });
-
+server.on('request', (req) => {
+  console.log("event received: ", req.method, req.url);
+})
 server.listen(3000);
 console.log("The server is listening on port 3000.");
+// Added a comment to test the edit.
