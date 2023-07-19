@@ -1,33 +1,22 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const { ObjectId } = require("mongodb");
-const { getDb } = require("./routes/mongodb");
-const { connectToDatabase } = require("./routes/mongodb");
-const documentsRouter = require("./routes/documents");
+const taskRoutes = require('./routes/taskRoutes');
 
 app.use(express.json());
-app.use("/documents", documentsRouter);
+
+// Use the task routes
+app.use('/tasks', taskRoutes);
+
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Internal server error:", err);
-  res.status(500).json({ error: "Internal server error" });
+  console.error(err);
+  return res.status(500).json({ error: 'Internal server error' });
 });
 
-
-// ...other server configuration
-
-async function startServer() {
-  try {
-    await connectToDatabase();
-    app.listen(3000, () => {
-      console.log("Server is running on port 3000");
-    });
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-  }
-}
-
-startServer();
-
+// Start the server
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
 
 // const { MongoClient, ObjectID } = require('mongodb');
 // const express = require('express');
