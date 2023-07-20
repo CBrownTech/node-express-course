@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product List</title>
+</head>
+<body>
+  <h1>Product List</h1>
+
+  <button id="fetchButton">Fetch Products</button>
+
+  <div id="productList"></div>
+
+  <script>
+    const fetchButton = document.getElementById('fetchButton');
+    const productListDiv = document.getElementById('productList');
+
+    fetchButton.addEventListener('click', () => {
+      fetch('/api/v1/products')
+        .then(response => response.json())
+        .then(data => {
+          // Clear any existing content in the productListDiv
+          productListDiv.innerHTML = '';
+
+          // Loop through the products and create HTML elements to display them
+          data.forEach(product => {
+            const productElement = document.createElement('p');
+            productElement.textContent = `Product ID: ${product.id}, Name: ${product.name}, Price: ${product.price}`;
+
+            // Append each product element to the productListDiv
+            productListDiv.appendChild(productElement);
+          });
+        })
+        .catch(error => console.log(error));
+    });
+  </script>
+
+</body>
+</html>
